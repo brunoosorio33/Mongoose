@@ -38,7 +38,27 @@ async function ejecutarConsultas() {
         console.table(
             cursosEconomicos.map((c) => c.toObject())
         );
+        
 
+        // Consulta 3: $in ecuentra documentos cuya lista de etiquetas incluya cualquiera de los siguientes valores.
+        const cursoPorTag = await Curso.find({
+            etiquetas: {$in: ["javascript", "nosql"]},
+        }).select("titulo etiquetas -_id")
+        console.log("\n3. Cursos con etiquetas javascript o nosql:")
+        console.log(cursoPorTag);
+
+        
+        // Consulta 4: la ruta con punto accede a un campo de un subdocumento
+        // $gte significa "mayor que o igual que"; sort(-1) ordena de mayor a menor y limit(3) trae 3 resultados.
+        const cursosAvanzados = await Curso.find({
+            "instructor.experienciaAnios": {$gte: 8},
+        })
+        .sort({duracionHoras: -1})
+        .limit(3)
+        .select("titulo duracionHoras instructor.nombre -_id")
+
+        console.log("\n4. Top Cursos de instructores senior ordenados por duracion:")
+        console.log(cursosAvanzados);
     } catch (error) {
         console.error("Error en las consultas:", error.message);
 
